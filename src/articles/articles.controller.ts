@@ -7,56 +7,42 @@ import {
   Patch,
   Delete,
   HttpCode,
-  HttpStatus
+  HttpStatus,
+  Query
 } from '@nestjs/common';
+
+import { ArticlesService } from './articles.service';
+import { ArticlesQuery } from './articles.query';
+import { CreateArticleInput } from './create-article.input';
+import { UpdateArticleInput } from './update-article.input';
 
 @Controller('articles')
 export class ArticlesController {
-  articles = [
-    { id: '1', title: 'Title#1', body: 'Body#1' },
-    { id: '2', title: 'Title#2', body: 'Body#2' },
-    { id: '3', title: 'Title#3', body: 'Body#3' },
-    { id: '4', title: 'Title#4', body: 'Body#4' },
-    { id: '5', title: 'Title#5', body: 'Body#5' },
-    { id: '6', title: 'Title#6', body: 'Body#6' },
-    { id: '7', title: 'Title#7', body: 'Body#7' },
-    { id: '8', title: 'Title#8', body: 'Body#8' }
-  ];
+  constructor(private articlesService: ArticlesService) {}
 
   @Get('/')
-  findAll() {
-    return this.articles;
+  findAll(@Query() query: ArticlesQuery) {
+    return this.articlesService.findAll(query);
   }
 
   @Get(':id')
-  findOne(@Param('id') id) {
-    return this.articles.find(article => article.id === id);
+  findOne(@Param('id') id: string) {
+    return this.articlesService.findOne(id);
   }
 
   @Post('/')
-  create(@Body() input) {
-    const article = { ...input, id: +new Date() };
-
-    this.articles.push(article);
-
-    return article;
+  create(@Body() input: CreateArticleInput) {
+    this.articlesService.create(input);
   }
 
   @Patch(':id')
-  update(@Param('id') id, @Body() body) {
-    let article = this.articles.find(article => article.id === id);
-
-    for (let key in body) {
-      article[key] = body[key];
-    }
-
-    return article;
+  update(@Param('id') id: string, @Body() input: UpdateArticleInput) {
+    return this.articlesService.update(id, input);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  // @HttpCode(204)
-  delete(@Param('id') id) {
-    this.articles = this.articles.filter(article => article.id !== id);
+  delete(@Param('id') id: string) {
+    this.articlesService.delete(id);
   }
 }
