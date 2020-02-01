@@ -42,7 +42,7 @@ export class ArticlesController {
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  delete(@Param('id') id: string) {
-    this.articlesService.delete(id);
+  async delete(@Param('id') id: string) {
+    await this.articlesService.delete(id);
   }
 }
